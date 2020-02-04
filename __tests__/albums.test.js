@@ -83,4 +83,57 @@ describe('/albums', () => {
         });
     });
   });
+  describe('with albums in the database', () => {
+    let albums;
+    beforeEach(done => {
+      Promise.all([
+        Album.create({
+          name: 'Rumours',
+          year: 1978,
+        }),
+        Album.create({
+          name: 'Highway To Hell',
+          year: 1979,
+        }),
+      ]).then(documents => {
+        albums = documents;
+        done();
+      });
+    });
+
+    describe('GET /albums', () => {
+      it('gets all the albums', done => {
+        request(app)
+          .get('/albums')
+          .then(res => {
+            expect(res.status).toBe(200);
+            expect(res.body.length).toBe(2);
+
+            res.body.forEach(album => {
+              const expected = albums.find(a => a.id.toString() === album._id);
+              expect(album.name).toBe(expected.name);
+              expect(album.year).toBe(expected.year);
+            });
+            done();
+          });
+      });
+    });
+
+    describe('PATCH /albums', () => {
+      it('can alter name of album', done => {
+        const album = albums[0];
+        request(app)
+          .patch(`/albums/${album._id}`)
+          .send({ year: 1980 })
+          .then(res => {
+            expect(res.status).toBe(200);
+
+            Album.findById(album._id, (_, updatedAlbum) => {
+              expect(updatedAlbum.year).toBe(1980);
+              done();
+            });
+          });
+      });
+    });
+  });
 });
