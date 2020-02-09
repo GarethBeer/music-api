@@ -11,15 +11,20 @@ exports.add = (req, res) => {
         year: req.body.year,
         artist: req.params.id,
       });
-      album.save().then(() => {
-        res.status(201).json(album);
-      });
+      album
+        .save()
+        .then(albums => {
+          res.status(201).json(albums);
+        })
+        .catch(error => {
+          res.status(400).json({ error });
+        });
     }
   });
 };
 
 exports.list = (req, res) => {
-  Album.find().then(albums => {
+  Album.find({}).then(albums => {
     res.status(200).json(albums);
   });
 };
@@ -33,6 +38,16 @@ exports.modify = (req, res) => {
       album.save().then(updatedAlbum => {
         res.status(200).json(updatedAlbum);
       });
+    }
+  });
+};
+
+exports.delete = (req, res) => {
+  Album.findByIdAndDelete({ _Id: req.params.id }, (_, album) => {
+    if (!album) {
+      res.status(404).json({ error: 'No album exists' });
+    } else {
+      res.status(204).json({});
     }
   });
 };

@@ -134,6 +134,50 @@ describe('/albums', () => {
             });
           });
       });
+
+      it('can alter name of album', done => {
+        const album = albums[1];
+        request(app)
+          .patch(`/albums/${album._id}`)
+          .send({ name: 'Back In Black' })
+          .then(res => {
+            expect(res.status).toBe(200);
+
+            Album.findById(album._id, (_, updatedAlbum) => {
+              expect(updatedAlbum.name).toBe('Back In Black');
+              done();
+            });
+          });
+      });
+
+      it('it gives an error if no album exists', done => {
+        request(app)
+          .patch('/albums/12345')
+          .send({ name: 'Stairway To Heaven' })
+          .then(res => {
+            expect(res.status).toBe(404);
+            expect(res.body.error).toBe('cannot find album');
+            done();
+          });
+      });
+    });
+
+    describe('Delete /albums', () => {
+      xit('can delete an album', done => {
+        const album = albums[0];
+        request(app)
+          .delete(`/albums/${album._id}`)
+          .then(res => {
+            console.log(albums);
+            expect(res.status).toBe(204);
+
+            Album.findById(album._id, (error, deletedAlbum) => {
+              expect(error).toBe(null);
+              expect(deletedAlbum).toBe(null);
+              done();
+            });
+          });
+      });
     });
   });
 });
