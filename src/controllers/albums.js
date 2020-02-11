@@ -11,14 +11,9 @@ exports.add = (req, res) => {
         year: req.body.year,
         artist: req.params.id,
       });
-      album
-        .save()
-        .then(albums => {
-          res.status(201).json(albums);
-        })
-        .catch(error => {
-          res.status(400).json({ error });
-        });
+      album.save().then(albums => {
+        res.status(201).json(albums);
+      });
     }
   });
 };
@@ -26,6 +21,16 @@ exports.add = (req, res) => {
 exports.list = (req, res) => {
   Album.find({}).then(albums => {
     res.status(200).json(albums);
+  });
+};
+
+exports.find = (req, res) => {
+  Album.findOne({ _id: req.params.albumId }, (_, result) => {
+    if (!result) {
+      res.status(404).json('error, no album found');
+    } else {
+      res.status(201).json(result);
+    }
   });
 };
 
@@ -43,7 +48,7 @@ exports.modify = (req, res) => {
 };
 
 exports.delete = (req, res) => {
-  Album.findByIdAndDelete({ _Id: req.params.id }, (_, album) => {
+  Album.findByIdAndDelete({ _id: req.params.id }, (_, album) => {
     if (!album) {
       res.status(404).json({ error: 'No album exists' });
     } else {

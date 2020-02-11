@@ -117,10 +117,20 @@ describe('/albums', () => {
             done();
           });
       });
+      it('finds one album', done => {
+        const album = albums[0];
+        request(app)
+          .get(`/albums/${album._id}`)
+          .then(res => {
+            expect(res.status).toBe(201);
+            expect(res.body.name).toBe(album.name);
+            done();
+          });
+      });
     });
 
     describe('PATCH /albums', () => {
-      it('can alter name of album', done => {
+      it('can alter year of album', done => {
         const album = albums[0];
         request(app)
           .patch(`/albums/${album._id}`)
@@ -163,12 +173,11 @@ describe('/albums', () => {
     });
 
     describe('Delete /albums', () => {
-      xit('can delete an album', done => {
+      it('can delete an album', done => {
         const album = albums[0];
         request(app)
           .delete(`/albums/${album._id}`)
           .then(res => {
-            console.log(albums);
             expect(res.status).toBe(204);
 
             Album.findById(album._id, (error, deletedAlbum) => {
@@ -176,6 +185,15 @@ describe('/albums', () => {
               expect(deletedAlbum).toBe(null);
               done();
             });
+          });
+      });
+
+      it('can gives a 404 if album doesnt exist', done => {
+        request(app)
+          .delete('/albums/12345')
+          .then(res => {
+            expect(res.status).toBe(404);
+            done();
           });
       });
     });

@@ -17,11 +17,12 @@ app.delete('/artists/:id', artistController.delete);
 // Albums
 app.post('/artists/:id/albums', albumController.add);
 app.get('/albums', albumController.list);
+app.get('/albums/:albumId', albumController.find);
 app.patch('/albums/:id', albumController.modify);
 app.delete('/albums/:id', albumController.delete);
 
 // Songs
-app.post('/album/:albumId/songs', songController.add);
+app.post('/albums/:albumId/songs', songController.add);
 app.get('/songs', songController.list);
 app.get('/songs/:songId', songController.find);
 app.patch('/songs/:songId', songController.modify);
